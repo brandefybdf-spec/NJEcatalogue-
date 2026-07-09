@@ -1,0 +1,172 @@
+import React, { useEffect, useMemo, useState } from "react";
+import api from "@/lib/api";
+import ProductCard from "@/components/ProductCard";
+import FilterSidebar from "@/components/FilterSidebar";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { SlidersHorizontal, Search } from "lucide-react";
+
+export default function Catalogue() {
+  const [meta, setMeta] = useState({ min_price: 50, max_price: 5000 });
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState([50, 5000]);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [loading, setLoading] = useState(true);
+
+  // Load meta + categories once
+  useEffect(() => {
+    (async () => {
+      try {
+        const [m, c] = await Promise.all([api.get("/meta"), api.get("/categories")]);
+        setMeta(m.data);
+        setPriceRange([m.data.min_price, m.data.max_price]);
+        setCategories(c.data);
+      } catch (e) { /* noop */ }
+    })();
+  }, []);
+
+  // Debounced product fetch on filter/search change
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const params = { sort };
+        if (selectedCategories.length) params.categories = selectedCategories.join(",");
+        params.min_price = priceRange[0];
+        params.max_price = priceRange[1];
+        if (search) params.search = search;
+        const { data } = await api.get("/products", { params });
+        setProducts(data);
+      } catch (e) { /* noop */ }
+      setLoading(false);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [selectedCategories, priceRange, search, sort]);
+
+  const toggleCategory = (id) =>
+    setSelectedCategories((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+
+  const reset = () => {
+    setSelectedCategories([]);
+    setPriceRange([meta.min_price, meta.max_price]);
+    setSearch("");
+  };
+
+  const filters = (
+    <FilterSidebar
+      categories={categories}
+      selectedCategories={selectedCategories}
+      onToggleCategory={toggleCategory}
+      minPrice={meta.min_price}
+      maxPrice={meta.max_price}
+      priceRange={priceRange}
+      onPriceChange={setPriceRange}
+      onReset={reset}
+    />
+  );
+
+  return (
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden" style={{ background: "var(--nje-surface)" }}>
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="overline">Est. Handcrafted in India</div>
+            <h1
+              className="font-editorial mt-4 text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight"
+              style={{ color: "var(--nje-text)" }}
+            >
+              Silver-plated ornaments,<br />
+              <em className="not-italic" style={{ color: "var(--nje-primary)" }}>gilat</em> handcrafts
+              &amp; junk jewellery.
+            </h1>
+            <p className="mt-6 max-w-md text-base" style={{ color: "var(--nje-muted)" }}>
+              Every piece from NJE is hand-picked, thoughtfully finished, and priced in ₹.
+              Explore the full catalogue below.
+            </p>
+          </div>
+          <div className="relative">
+            <div className="grid grid-cols-2 gap-4">
+              {products.slice(0, 4).map((p) => (
+                <div key={p.id} className="product-img-wrap rounded-sm" style={{ aspectRatio: "3 / 4" }}>
+                  {p.image_url && <img src={p.image_url.startsWith("http") ? p.image_url : `${process.env.REACT_APP_BACKEND_URL}${p.image_url}`} alt="" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Toolbar */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-10 pt-10 pb-4">
+        <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name…"
+              className="pl-9 bg-white"
+              data-testid="search-input"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="md:hidden" data-testid="btn-open-filters">
+                  <SlidersHorizontal className="w-4 h-4 mr-2" /> Filters
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80">
+                <SheetTitle className="mb-4">Filters</SheetTitle>
+                {filters}
+              </SheetContent>
+            </Sheet>
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="w-[180px] bg-white" data-testid="sort-select">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest" data-testid="sort-newest">Newest</SelectItem>
+                <SelectItem value="price_asc" data-testid="sort-price-asc">Price: Low → High</SelectItem>
+                <SelectItem value="price_desc" data-testid="sort-price-desc">Price: High → Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </section>
+
+      {/* Grid */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-10 pb-24">
+        <div className="grid md:grid-cols-[16rem_1fr] gap-10 mt-6">
+          <div className="hidden md:block">
+            {filters}
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="text-sm" style={{ color: "var(--nje-muted)" }} data-testid="results-count">
+                {loading ? "Loading…" : `${products.length} product${products.length !== 1 ? "s" : ""}`}
+              </div>
+            </div>
+            {products.length === 0 && !loading ? (
+              <div className="py-24 text-center text-sm" style={{ color: "var(--nje-muted)" }} data-testid="empty-state">
+                No products match your filters.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12" data-testid="product-grid">
+                {products.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

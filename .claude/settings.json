@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v -E \"node_modules|/\\\\.git/\")",
+      "Bash(git check-ignore *)",
+      "Bash(git add *)"
+    ]
+  }
+}

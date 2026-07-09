@@ -1,0 +1,143 @@
+{
+  "project_context": {
+    "brand_name": "NJE — Novelty Jewellery Emporium",
+    "app_type": "Hybrid E-commerce and Admin Dashboard",
+    "vibe": "Premium yet approachable, modern minimal, elegance, craftsmanship",
+    "currency": "INR (₹)"
+  },
+  "themes": {
+    "strategy": "Dual Context. Customer Frontend is Light/Earthy Minimalist (shows off product imagery). Admin Dashboard is High-Density Soft Light theme (for functional clarity without strain). Avoid pure dark mode for the customer side to maintain the editorial white-space jewelry aesthetic."
+  },
+  "typography": {
+    "headlines_customer": "Cormorant Garamond (font-light to font-medium) for an elegant, editorial feel.",
+    "headlines_admin": "Outfit (font-semibold) for clean, high-density data views.",
+    "body": "Manrope (font-normal to font-medium) for high legibility across platforms.",
+    "monospace": "JetBrains Mono (for item numbers like NJE-Silver-001).",
+    "rules": [
+      "No generic Sans (Inter/Roboto) for headings.",
+      "Customer H1 maximum: text-5xl to text-6xl with tracking-tighter.",
+      "Overlines/Labels: uppercase, tracking-[0.2em], text-xs."
+    ]
+  },
+  "colors": {
+    "archetype": "Organic & Earthy mixed with Luxury",
+    "customer_frontend": {
+      "background": "#FAFAFA",
+      "surface": "#F2F0EB",
+      "primary": "#8C5A4F",
+      "text_main": "#1C1917",
+      "text_muted": "#575F66",
+      "border": "#E5E5E5"
+    },
+    "admin_dashboard": {
+      "background": "#F3F4F6",
+      "sidebar": "#1E2329",
+      "sidebar_text": "#F9FAFB",
+      "surface": "#FFFFFF",
+      "primary": "#111827",
+      "text_main": "#111827",
+      "text_muted": "#6B7280",
+      "border": "#E5E7EB"
+    },
+    "rules": [
+      "Never use pure black #000000.",
+      "Ensure text meets APCA/WCAG standards."
+    ]
+  },
+  "visual enhancers": {
+    "textures": "Subtle noise overlays on hero sections to kill digital flatness.",
+    "shadows": "Ambient diffuse shadows for floating elements, no hard dark dropshadows.",
+    "glassmorphism": "Crystal Glass (backdrop-blur-xl bg-white/70 with 1px border-white/40) for sticky navs."
+  },
+  "component name": [
+    "Shadcn Slider (customize defaultValue={[min, max]} for dual-handle price range)",
+    "Shadcn Checkbox (for category multi-select in sidebar)",
+    "Shadcn Select (for sort dropdown and form inputs)",
+    "Shadcn Dialog (for product detail modal if used)",
+    "Shadcn Form, Input (admin product create/edit)",
+    "Shadcn DropdownMenu (bulk actions on tables)",
+    "Shadcn Table (admin dashboard list)"
+  ],
+  "grids": {
+    "customer_gallery": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8. High visual impact, breathable spacing.",
+    "admin_dashboard": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4. Dense metric summary cards at top, wide table below."
+  },
+  "layouts": {
+    "spacing_scale": "Generous Spacing: p-8, p-12, p-16 for sections in Customer view.",
+    "product_card": "Cardless layout. Image container aspect-[4/5] bg-[#F2F0EB], text outside container. No borders.",
+    "admin_layout": "Fixed sidebar on left, scrollable main content area. Strict hierarchy."
+  },
+  "motion": {
+    "hover_states": "Images slightly scale up inside overflow-hidden. Buttons shift -translate-y-[2px] with shadow-md.",
+    "transitions": "Use Framer Motion for staggered fade-ins of the product gallery.",
+    "rules": "Respect prefers-reduced-motion. Disable non-essential motion."
+  },
+  "accessibility": {
+    "contrast": "Maintain 4.5:1 ratio for standard text.",
+    "focus": "High contrast focus rings focus:ring-2 focus:ring-[#8C5A4F].",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='price-filter-slider', data-testid='product-card-1')."
+  },
+  "media": {
+    "images": "High-quality, unfiltered aesthetic. Images must not exceed 80vh on mobile. Max overlay bg-black/30."
+  },
+  "3d libraries": {
+    "usage": "Not recommended for this specific clean e-commerce grid, but if a hero section is added later, use React Spring Parallax for 2.5D layer depth."
+  },
+  "image urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxzaWx2ZXIlMjBqZXdlbHJ5JTIwZWFycmluZ3N8ZW58MHx8fHwxNzgzNjE3MDUwfDA&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Silver earring lot"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1716461534906-d31a17008801?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwzfHxzaWx2ZXIlMjBqZXdlbHJ5JTIwZWFycmluZ3N8ZW58MHx8fHwxNzgzNjE3MDUwfDA&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Green and white stone earrings"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1756792339487-d044709b27f2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxoYW5kbWFkZSUyMGV0aG5pYyUyMG5lY2tsYWNlfGVufDB8fHx8MTc4MzYxNzA1MHww&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Turquoise beaded necklace"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1778230501926-3b8a3f2bb5f4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHw0fHxoYW5kbWFkZSUyMGV0aG5pYyUyMG5lY2tsYWNlfGVufDB8fHx8MTc4MzYxNzA1MHww&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Colorful beaded necklaces"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1758995116383-f51775896add?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHw0fHxtZXRhbCUyMGJhbmdsZXN8ZW58MHx8fHwxNzgzNjE3MDUwfDA&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Gold/Metal ornate bangles stack"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1758995119744-6454f091303f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxtZXRhbCUyMGJhbmdsZXN8ZW58MHx8fHwxNzgzNjE3MDUwfDA&ixlib=rb-4.1.0&q=85",
+      "category": "Product Gallery",
+      "description": "Metal bangles on display"
+    }
+  ],
+  "instructions_to_main_agent": [
+    "CRITICAL: The codebase uses .js and .jsx files. DO NOT use .tsx or TypeScript under any circumstances.",
+    "Import fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Manrope:wght@400;500;600&family=Outfit:wght@400;600&family=JetBrains+Mono&display=swap');",
+    "Use react-router-dom for routing between '/' (Customer) and '/admin' (Dashboard).",
+    "Format prices using new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price).",
+    "For the Customer frontend, build a responsive layout with a persistent sidebar filter (on desktop) and a sheet/drawer on mobile.",
+    "Implement the Dual-Handle slider for price range using Shadcn UI's Slider component (ensure it handles array defaultValue properly for min/max).",
+    "Add 'data-testid' to ALL interactive elements (e.g., data-testid='login-button', data-testid='category-filter-earrings').",
+    "Admin Dashboard: Build JWT login flow. Main dashboard requires a dense data table for products and metric summary cards. Ensure a drag-and-drop zone in the product create form.",
+    "Use lucide-react for all icons."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "DO NOT apply universal transition (transition: all). Use specific transitions to avoid breaking transforms.",
+    "DO NOT center align the app container (.App { text-align: center; }).",
+    "Use glass-morphism effects carefully with backdrop-blur and semi-transparent borders.",
+    "Avoid default SaaS blue colors. Stick to the Earthy Elegance palette provided.",
+    "Do not use generic AI emojis for icons. Use real SVG icons (lucide-react).",
+    "Never use pure transparent backgrounds for overlays, headers, or dropdowns. Ensure readability."
+  ],
+  "GENERAL UI UX DESIGN GUIDELINES": [
+    "Prioritize optical alignment over geometric alignment.",
+    "Every interaction needs micro-animations (hover states, focus states).",
+    "Use 2-3x more spacing than typical defaults (e.g., p-8 instead of p-4).",
+    "Form validation messages should be clear, concise, and accessible."
+  ]
+}
