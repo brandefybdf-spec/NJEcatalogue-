@@ -2,6 +2,19 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
+        <!-- TEMPORARY: Eruda mobile debug console, gated behind ?debug=true. Remove after debugging. -->
+        <script>
+            (function () {
+                if (new URLSearchParams(window.location.search).get("debug") === "true") {
+                    var s = document.createElement("script");
+                    s.src = "https://cdn.jsdelivr.net/npm/eruda";
+                    s.onload = function () {
+                        eruda.init();
+                    };
+                    document.head.appendChild(s);
+                }
+            })();
+        </script>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
         <meta name="description" content="NJE — Novelty Jewellery Emporium. Silver-plated ornaments, gilat handcrafts &amp; junk jewellery. Since 1951." />
