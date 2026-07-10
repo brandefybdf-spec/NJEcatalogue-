@@ -165,6 +165,11 @@ class CategoryReorder(BaseModel):
     order: List[str]  # list of category ids in desired order
 
 
+class ProductImage(BaseModel):
+    url: str
+    path: Optional[str] = None
+
+
 class ProductCreate(BaseModel):
     name: str = Field(min_length=1, max_length=140)
     description: str = ""
@@ -172,6 +177,7 @@ class ProductCreate(BaseModel):
     category_id: str
     image_url: str = ""
     image_path: Optional[str] = None
+    images: List[ProductImage] = []
 
 
 class ProductUpdate(BaseModel):
@@ -181,6 +187,7 @@ class ProductUpdate(BaseModel):
     category_id: Optional[str] = None
     image_url: Optional[str] = None
     image_path: Optional[str] = None
+    images: Optional[List[ProductImage]] = None
 
 
 class BulkIdsRequest(BaseModel):
@@ -645,6 +652,7 @@ async def create_product(payload: ProductCreate, _: dict = Depends(require_admin
         "item_number": item_number,
         "image_url": payload.image_url or "",
         "image_path": payload.image_path,
+        "images": [img.model_dump() for img in payload.images],
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }

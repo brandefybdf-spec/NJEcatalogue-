@@ -5,7 +5,7 @@ import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // NJE business WhatsApp number (E.164 without +)
-const NJE_WHATSAPP = "919971043808";
+const NJE_WHATSAPP = "919811922941";
 
 export default function ProductDetail() {
   const { id } = useParams();

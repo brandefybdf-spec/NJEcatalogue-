@@ -14,6 +14,7 @@ import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminProducts from "@/pages/AdminProducts";
 import AdminProductForm from "@/pages/AdminProductForm";
+import AdminBulkUpload from "@/pages/AdminBulkUpload";
 import AdminCategories from "@/pages/AdminCategories";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="products" element={<AdminProducts />} />
               <Route path="products/new" element={<AdminProductForm />} />
               <Route path="products/:id/edit" element={<AdminProductForm />} />
+              <Route path="bulk-upload" element={<AdminBulkUpload />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="analytics" element={<AdminAnalytics />} />
             </Route>

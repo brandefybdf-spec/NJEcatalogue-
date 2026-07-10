@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Tags, BarChart3, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Tags, BarChart3, LogOut, UploadCloud } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true, id: "nav-dashboard" },
   { to: "/admin/products", label: "Products", icon: Package, id: "nav-products" },
+  { to: "/admin/bulk-upload", label: "Bulk Upload", icon: UploadCloud, id: "nav-bulk-upload" },
   { to: "/admin/categories", label: "Categories", icon: Tags, id: "nav-categories" },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3, id: "nav-analytics" },
 ];

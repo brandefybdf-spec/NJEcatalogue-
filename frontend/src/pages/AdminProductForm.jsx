@@ -19,7 +19,7 @@ export default function AdminProductForm() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "", description: "", price: "", category_id: "", image_url: "", image_path: null,
+    name: "", description: "", price: "", category_id: "", image_url: "", image_path: null, images: [],
   });
   const [categories, setCategories] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -35,9 +35,12 @@ export default function AdminProductForm() {
       if (isEdit) {
         try {
           const { data: p } = await api.get(`/products/${id}`);
+          const images = p.images && p.images.length > 0
+            ? p.images
+            : (p.image_url ? [{ url: p.image_url, path: p.image_path }] : []);
           setForm({
             name: p.name, description: p.description, price: p.price,
-            category_id: p.category_id, image_url: p.image_url, image_path: p.image_path,
+            category_id: p.category_id, image_url: p.image_url, image_path: p.image_path, images,
           });
         } catch (e) { toast.error("Product not found"); }
         setLoading(false);
@@ -74,6 +77,7 @@ export default function AdminProductForm() {
         category_id: form.category_id,
         image_url: form.image_url || "",
         image_path: form.image_path || null,
+        images: form.images.map((im) => ({ url: im.url, path: im.path || null })),
       };
       if (isEdit) {
         await api.patch(`/products/${id}`, payload);
@@ -185,14 +189,20 @@ export default function AdminProductForm() {
         </div>
 
         <div>
-          <Label className="block mb-1.5">Product image</Label>
+          <Label className="block mb-1.5">Product images</Label>
           <ImageUpload
-            value={form.image_url}
-            onUploaded={(r) => setForm((f) => ({ ...f, image_url: r.url, image_path: r.path }))}
+            single={false}
+            value={form.images.map((im) => im.url)}
+            onUploaded={(r) => setForm((f) => {
+              const images = [...f.images, { url: r.url, path: r.path }];
+              return { ...f, images, image_url: images[0].url, image_path: images[0].path };
+            })}
+            onRemove={(url) => setForm((f) => {
+              const images = f.images.filter((im) => im.url !== url);
+              return { ...f, images, image_url: images[0]?.url || "", image_path: images[0]?.path || null };
+            })}
           />
-          {isEdit && (
-            <div className="mt-2 text-xs text-neutral-500">Uploading a new image will replace the current one.</div>
-          )}
+          <div className="mt-2 text-xs text-neutral-500">The first image is used as the cover photo in the catalogue.</div>
         </div>
 
         <div className="md:col-span-2 flex items-center gap-3 mt-4">
