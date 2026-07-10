@@ -8,7 +8,6 @@ export const API_BASE = `${BACKEND_URL}/api`;
 // where cross-site cookies are unreliable.
 const api = axios.create({
   baseURL: API_BASE,
-  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
