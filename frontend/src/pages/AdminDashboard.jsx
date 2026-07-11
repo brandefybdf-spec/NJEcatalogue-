@@ -74,7 +74,7 @@ export default function AdminDashboard() {
             {recent.map((p) => (
               <Link key={p.id} to={`/admin/products/${p.id}/edit`} className="block group" data-testid={`recent-product-${p.id}`}>
                 <div className="product-img-wrap rounded-md" style={{ aspectRatio: "1 / 1" }}>
-                  {p.image_url && <img src={resolveImageUrl(p.image_url)} alt={p.name} />}
+                  {p.image_url && <img src={resolveImageUrl(p.image_url, "thumbnail")} alt={p.name} loading="lazy" />}
                 </div>
                 <div className="mt-2 text-sm font-medium truncate">{p.name}</div>
                 <div className="text-xs text-neutral-500">{formatINR(p.price)}</div>

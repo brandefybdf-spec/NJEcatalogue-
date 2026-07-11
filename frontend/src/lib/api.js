@@ -18,12 +18,31 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/** Convert a backend image reference into an absolute URL usable in <img src>. */
-export function resolveImageUrl(imageUrl) {
+// Cloudinary on-the-fly transformation strings, keyed by usage context.
+const CLOUDINARY_TRANSFORMS = {
+  thumbnail: "f_auto,q_auto,w_400", // catalogue grid, admin table
+  hero: "f_auto,q_auto,w_400", // homepage hero collage
+  detail: "f_auto,q_auto,w_800", // product detail page
+};
+
+/**
+ * Convert a backend image reference into an absolute URL usable in <img src>.
+ * Pass `size` ("thumbnail" | "hero" | "detail") to have Cloudinary serve an
+ * auto-format/quality, resized variant instead of the raw uploaded original —
+ * works retroactively on already-uploaded images, no re-upload needed.
+ */
+export function resolveImageUrl(imageUrl, size) {
   if (!imageUrl) return "";
-  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
-  if (imageUrl.startsWith("/api/")) return `${BACKEND_URL}${imageUrl}`;
-  return imageUrl;
+  let url = imageUrl;
+  if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+    if (!url.startsWith("/api/")) return url;
+    url = `${BACKEND_URL}${url}`;
+  }
+  const transform = size && CLOUDINARY_TRANSFORMS[size];
+  if (transform && url.includes("res.cloudinary.com") && url.includes("/upload/")) {
+    return url.replace("/upload/", `/upload/${transform}/`);
+  }
+  return url;
 }
 
 /** Format Indian Rupee amount without decimals. */

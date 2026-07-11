@@ -12,7 +12,7 @@ export default function ProductCard({ product, index = 0 }) {
       <div className="product-img-wrap rounded-sm" style={{ aspectRatio: "4 / 5" }}>
         {product.image_url ? (
           <img
-            src={resolveImageUrl(product.image_url)}
+            src={resolveImageUrl(product.image_url, "thumbnail")}
             alt={product.name}
             loading="lazy"
           />

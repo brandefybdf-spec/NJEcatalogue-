@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import api from "@/lib/api";
+import api, { resolveImageUrl } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import FilterSidebar from "@/components/FilterSidebar";
 import { Input } from "@/components/ui/input";
@@ -94,7 +94,7 @@ export default function Catalogue() {
             <div className="grid grid-cols-2 gap-4">
               {products.slice(0, 4).map((p) => (
                 <div key={p.id} className="product-img-wrap rounded-sm" style={{ aspectRatio: "3 / 4" }}>
-                  {p.image_url && <img src={p.image_url.startsWith("http") ? p.image_url : `${process.env.REACT_APP_BACKEND_URL}${p.image_url}`} alt="" />}
+                  {p.image_url && <img src={resolveImageUrl(p.image_url, "hero")} alt="" />}
                 </div>
               ))}
             </div>

@@ -14,12 +14,13 @@ import os
 import uuid
 import logging
 import re
+import asyncio
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 
 import bcrypt
 import jwt
-import requests
+import httpx
 import cloudinary
 import cloudinary.uploader
 from io import BytesIO
@@ -232,6 +233,20 @@ async def hydrate_product(p: dict) -> dict:
     return p
 
 
+async def _load_categories_by_id() -> dict:
+    cats = await db.categories.find({}, {"_id": 0, "id": 1, "name": 1, "slug": 1}).to_list(None)
+    return {c["id"]: c for c in cats}
+
+
+def _attach_category(p: dict, categories_by_id: dict) -> dict:
+    """Attach category name to a product doc using a preloaded lookup dict; strip mongo _id."""
+    p.pop("_id", None)
+    cat = categories_by_id.get(p.get("category_id"))
+    p["category_name"] = cat["name"] if cat else "Uncategorised"
+    p["category_slug"] = cat["slug"] if cat else ""
+    return p
+
+
 # ---------- Auth routes ----------
 @api.post("/auth/login")
 async def login(payload: LoginRequest, response: Response):
@@ -386,9 +401,10 @@ async def list_products(
     }
     sort_spec = sort_map.get(sort, sort_map["newest"])
     cursor = db.products.find(q).sort(sort_spec).limit(limit)
+    categories_by_id = await _load_categories_by_id()
     items = []
     async for p in cursor:
-        items.append(await hydrate_product(p))
+        items.append(_attach_category(p, categories_by_id))
     return items
 
 
@@ -419,17 +435,28 @@ def _products_filter_from_params(
     return q
 
 
-def _fetch_product_image_bytes(product: dict) -> Optional[bytes]:
-    """Try to fetch image bytes for a product. Returns None if unavailable."""
+async def _fetch_product_image_bytes(product: dict, client: httpx.AsyncClient, sem: asyncio.Semaphore) -> Optional[bytes]:
+    """Try to fetch image bytes for a product. Returns None if unavailable (never raises)."""
+    url = product.get("image_url") or ""
+    if not (url.startswith("http://") or url.startswith("https://")):
+        return None
     try:
-        url = product.get("image_url") or ""
-        if url.startswith("http://") or url.startswith("https://"):
-            r = requests.get(url, timeout=15)
-            if r.status_code == 200:
-                return r.content
+        async with sem:
+            r = await client.get(url, timeout=8.0)
+        if r.status_code == 200:
+            return r.content
     except Exception as e:
         logger.warning(f"image fetch failed for {product.get('id')}: {e}")
     return None
+
+
+async def _fetch_all_product_images(products: list, concurrency: int = 15) -> dict:
+    """Concurrently fetch cover images for a list of products, capped at `concurrency`
+    simultaneous requests. Failed/slow images are skipped (logged), never fail the batch."""
+    sem = asyncio.Semaphore(concurrency)
+    async with httpx.AsyncClient() as client:
+        results = await asyncio.gather(*[_fetch_product_image_bytes(p, client, sem) for p in products])
+    return {p["id"]: img for p, img in zip(products, results) if img is not None}
 
 
 def _rupee(v: float) -> str:
@@ -437,7 +464,7 @@ def _rupee(v: float) -> str:
     return f"Rs. {int(round(float(v))):,}"
 
 
-def _build_catalogue_pdf(products: list, ids_filter: Optional[set] = None) -> bytes:
+def _build_catalogue_pdf(products: list, image_bytes_map: Optional[dict] = None, ids_filter: Optional[set] = None) -> bytes:
     """4-up (2x2) product catalogue PDF with image + name + item# + price."""
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
@@ -458,6 +485,7 @@ def _build_catalogue_pdf(products: list, ids_filter: Optional[set] = None) -> by
     cell_w = grid_w / cols
     cell_h = grid_h / rows
 
+    image_bytes_map = image_bytes_map or {}
     filtered = [p for p in products if not ids_filter or p["id"] in ids_filter]
     total = len(filtered)
     pages = max(1, (total + per_page - 1) // per_page)
@@ -493,7 +521,7 @@ def _build_catalogue_pdf(products: list, ids_filter: Optional[set] = None) -> by
             img_area_h = cell_h - 2 * pad - 20 * mm  # leave room for text
 
             # Image
-            img_bytes = _fetch_product_image_bytes(product)
+            img_bytes = image_bytes_map.get(product["id"])
             if img_bytes:
                 try:
                     im = Image.open(BytesIO(img_bytes)).convert("RGB")
@@ -619,7 +647,8 @@ async def export_products_pdf(
         pdf_bytes = _build_pricelist_pdf(products)
         fname = f"nje-pricelist-{datetime.now(timezone.utc).strftime('%Y%m%d')}.pdf"
     else:
-        pdf_bytes = _build_catalogue_pdf(products)
+        image_bytes_map = await _fetch_all_product_images(products)
+        pdf_bytes = _build_catalogue_pdf(products, image_bytes_map=image_bytes_map)
         fname = f"nje-catalogue-{datetime.now(timezone.utc).strftime('%Y%m%d')}.pdf"
 
     return FastAPIResponse(
@@ -800,6 +829,7 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 

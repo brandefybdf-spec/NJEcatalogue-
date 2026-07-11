@@ -28,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Plus, MoreHorizontal, Trash2, Pencil, Search, FileDown } from "lucide-react";
+import { Plus, MoreHorizontal, Trash2, Pencil, Search, FileDown, Loader2 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 
 export default function AdminProducts() {
@@ -38,6 +38,7 @@ export default function AdminProducts() {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -96,6 +97,8 @@ export default function AdminProducts() {
   };
 
   const exportPdf = async (style) => {
+    if (exporting) return;
+    setExporting(true);
     try {
       const params = new URLSearchParams({ style });
       if (search) params.set("search", search);
@@ -120,7 +123,11 @@ export default function AdminProducts() {
       a.remove();
       URL.revokeObjectURL(url);
       toast.success(`${style === "catalogue" ? "Catalogue" : "Price list"} PDF downloaded`);
-    } catch (e) { toast.error(e.message || "Export failed"); }
+    } catch (e) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -162,8 +169,13 @@ export default function AdminProducts() {
             </Select>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" data-testid="btn-export-pdf">
-                  <FileDown className="w-4 h-4 mr-2" /> Export PDF
+                <Button variant="outline" size="sm" disabled={exporting} data-testid="btn-export-pdf">
+                  {exporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4 mr-2" />
+                  )}
+                  {exporting ? "Exporting…" : "Export PDF"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
@@ -175,11 +187,11 @@ export default function AdminProducts() {
                       : "Export all products"}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => exportPdf("catalogue")} data-testid="export-catalogue">
+                <DropdownMenuItem onClick={() => exportPdf("catalogue")} disabled={exporting} data-testid="export-catalogue">
                   Catalogue style
                   <span className="ml-auto text-xs text-neutral-500">with images</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportPdf("pricelist")} data-testid="export-pricelist">
+                <DropdownMenuItem onClick={() => exportPdf("pricelist")} disabled={exporting} data-testid="export-pricelist">
                   Price list
                   <span className="ml-auto text-xs text-neutral-500">table only</span>
                 </DropdownMenuItem>
@@ -265,7 +277,7 @@ export default function AdminProducts() {
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded overflow-hidden bg-neutral-100 shrink-0">
-                        {p.image_url && <img src={resolveImageUrl(p.image_url)} alt="" className="w-full h-full object-cover" />}
+                        {p.image_url && <img src={resolveImageUrl(p.image_url, "thumbnail")} alt="" loading="lazy" className="w-full h-full object-cover" />}
                       </div>
                       <div>
                         <div className="font-medium">{p.name}</div>

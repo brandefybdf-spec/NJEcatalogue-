@@ -7,7 +7,10 @@
       "Bash(git remote *)",
       "Bash(git fetch *)",
       "Bash(sed 's#https://[^@]*@#https://<redacted>@#')",
-      "Bash(git ls-tree *)"
+      "Bash(git ls-tree *)",
+      "Bash(yarn build *)",
+      "PowerShell(py -3 -m py_compile \"c:\\\\Users\\\\MADHAB\\\\Desktop\\\\NJE.Catalogue system\\\\backend\\\\server.py\")",
+      "PowerShell(if \\($?\\) { \"OK\" })"
     ]
   }
 }

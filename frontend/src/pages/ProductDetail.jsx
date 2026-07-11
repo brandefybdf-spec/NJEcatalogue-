@@ -47,7 +47,7 @@ export default function ProductDetail() {
 
       <div className="mt-8 grid md:grid-cols-2 gap-12">
         <div className="product-img-wrap rounded-sm" style={{ aspectRatio: "4 / 5" }}>
-          {product.image_url && <img src={resolveImageUrl(product.image_url)} alt={product.name} />}
+          {product.image_url && <img src={resolveImageUrl(product.image_url, "detail")} alt={product.name} />}
         </div>
         <div className="pt-4">
           <div className="overline" data-testid="detail-category">{product.category_name}</div>
