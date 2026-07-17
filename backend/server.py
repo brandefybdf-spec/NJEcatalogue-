@@ -355,14 +355,18 @@ async def delete_category(cat_id: str, _: dict = Depends(require_admin)):
     return {"ok": True}
 
 
-# ---------- Meta (max price etc) ----------
+# ---------- Meta (min/max price etc) ----------
 @api.get("/meta")
 async def get_meta():
     max_doc = await db.products.find({}, {"_id": 0, "price": 1}).sort("price", -1).limit(1).to_list(1)
     max_price = int(max_doc[0]["price"]) if max_doc else 5000
     if max_price < 100:
         max_price = 100
-    return {"min_price": 50, "max_price": max_price, "app_name": "NJE", "currency": "INR"}
+    min_doc = await db.products.find({}, {"_id": 0, "price": 1}).sort("price", 1).limit(1).to_list(1)
+    min_price = int(min_doc[0]["price"]) if min_doc else 0
+    if min_price < 0:
+        min_price = 0
+    return {"min_price": min_price, "max_price": max_price, "app_name": "NJE", "currency": "INR"}
 
 
 # ---------- Products ----------
