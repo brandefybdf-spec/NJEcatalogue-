@@ -5,26 +5,20 @@ import { Toaster } from "@/components/ui/sonner";
 import { Loader2 } from "lucide-react";
 
 import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import CustomerLayout from "@/components/CustomerLayout";
 
 import Catalogue from "@/pages/Catalogue";
 import ProductDetail from "@/pages/ProductDetail";
 
-// Admin panel is code-split out of the public bundle — a catalogue visitor
-// never downloads it (recharts, bulk upload, forms, etc.).
-const AdminLayout = lazy(() => import("@/components/AdminLayout"));
-const AdminLogin = lazy(() => import("@/pages/AdminLogin"));
-const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
-const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
-const AdminProductForm = lazy(() => import("@/pages/AdminProductForm"));
-const AdminBulkUpload = lazy(() => import("@/pages/AdminBulkUpload"));
-const AdminCategories = lazy(() => import("@/pages/AdminCategories"));
-const AdminAnalytics = lazy(() => import("@/pages/AdminAnalytics"));
-
-// Sanity Studio (new CMS-based admin, being built alongside the existing
-// admin panel — not yet wired up to replace it).
+// Sanity Studio is the current admin — code-split out of the public bundle,
+// a catalogue visitor never downloads it.
 const SanityStudioPage = lazy(() => import("@/pages/SanityStudioPage"));
+
+// The old MongoDB/FastAPI-backed admin pages (AdminDashboard, AdminProducts,
+// etc.) still exist and still work, but they no longer manage the live
+// catalogue — the public site reads from Sanity now. Routing to them was
+// removed so nobody edits data there by mistake; the files are left in
+// place as a reference/fallback rather than deleted.
 
 function AdminFallback() {
   return (
@@ -47,27 +41,9 @@ export default function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
               </Route>
 
-              {/* Admin */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="products/new" element={<AdminProductForm />} />
-                <Route path="products/:id/edit" element={<AdminProductForm />} />
-                <Route path="bulk-upload" element={<AdminBulkUpload />} />
-                <Route path="categories" element={<AdminCategories />} />
-                <Route path="analytics" element={<AdminAnalytics />} />
-              </Route>
-
-              {/* New Sanity Studio admin — not yet linked from the UI, reachable directly */}
+              {/* Admin — Sanity Studio */}
               <Route path="/admin/studio/*" element={<SanityStudioPage />} />
+              <Route path="/admin/*" element={<Navigate to="/admin/studio" replace />} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

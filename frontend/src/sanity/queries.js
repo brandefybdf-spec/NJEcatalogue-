@@ -56,6 +56,17 @@ export async function getProducts({ categoryIds, minPrice, maxPrice, search, sor
   return sanityClient.fetch(query, params);
 }
 
+/** Fetch specific products by item number, in the order requested. */
+export async function getProductsByItemNumbers(itemNumbers) {
+  const results = await sanityClient.fetch(
+    `*[_type == "product" && itemNumber in $itemNumbers] ${PRODUCT_PROJECTION}`,
+    { itemNumbers }
+  );
+  return itemNumbers
+    .map((num) => results.find((p) => p.item_number === num))
+    .filter(Boolean);
+}
+
 export async function getProduct(id) {
   return sanityClient.fetch(`*[_type == "product" && _id == $id][0] ${PRODUCT_PROJECTION}`, { id });
 }

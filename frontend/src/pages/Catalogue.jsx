@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { urlForImage } from "@/sanity/client";
-import { getCategories, getProducts } from "@/sanity/queries";
+import { getCategories, getProducts, getProductsByItemNumbers } from "@/sanity/queries";
 import ProductCard from "@/components/ProductCard";
 import SanityImage from "@/components/SanityImage";
 import FilterSidebar from "@/components/FilterSidebar";
@@ -10,19 +10,38 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal, Search } from "lucide-react";
 
+// Hand-picked products for the homepage hero collage.
+const HERO_ITEM_NUMBERS = ["NJE-Enamel-Gilat-001", "NJE-Necklaces-006", "NJE-Silver-013", "NJE-Silver-009"];
+
+// Gilat Handcrafts products are shown, but always pushed to the end of the
+// grid regardless of the chosen sort — a display preference, not a filter.
+const PUSH_DOWN_CATEGORY = "Gilat Handcrafts";
+
+function pushDownCategory(products) {
+  const rest = products.filter((p) => p.category_name !== PUSH_DOWN_CATEGORY);
+  const pushed = products.filter((p) => p.category_name === PUSH_DOWN_CATEGORY);
+  return [...rest, ...pushed];
+}
+
 export default function Catalogue() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [heroProducts, setHeroProducts] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
 
-  // Load categories once
+  // Load categories + hero products once
   useEffect(() => {
     (async () => {
       try {
         setCategories(await getCategories());
+      } catch (e) { /* noop */ }
+    })();
+    (async () => {
+      try {
+        setHeroProducts(await getProductsByItemNumbers(HERO_ITEM_NUMBERS));
       } catch (e) { /* noop */ }
     })();
   }, []);
@@ -37,7 +56,7 @@ export default function Catalogue() {
           search,
           sort,
         });
-        setProducts(data);
+        setProducts(pushDownCategory(data));
       } catch (e) { /* noop */ }
       setLoading(false);
     }, 250);
@@ -83,7 +102,7 @@ export default function Catalogue() {
           </div>
           <div className="relative">
             <div className="grid grid-cols-2 gap-4">
-              {products.slice(0, 4).map((p) => (
+              {heroProducts.map((p) => (
                 <div key={p.id} className="product-img-wrap rounded-sm" style={{ aspectRatio: "3 / 4" }}>
                   {p.image && <SanityImage src={urlForImage(p.image, 400)} lqip={p.image_lqip} alt="" />}
                 </div>
@@ -149,7 +168,7 @@ export default function Catalogue() {
                 No products match your filters.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12" data-testid="product-grid">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 sm:gap-x-6 gap-y-8 sm:gap-y-12" data-testid="product-grid">
                 {products.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}
