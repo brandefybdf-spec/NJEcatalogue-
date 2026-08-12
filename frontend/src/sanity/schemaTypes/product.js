@@ -31,6 +31,14 @@ export default {
       validation: (Rule) => Rule.required(),
       components: { input: ItemNumberInput },
     },
+    {
+      name: "slug",
+      title: "URL slug",
+      type: "slug",
+      description: "Click Generate after setting the item number — this is what shows up in the product's web address.",
+      options: { source: "itemNumber", maxLength: 96 },
+      validation: (Rule) => Rule.required(),
+    },
     { name: "createdAt", title: "Created at", type: "datetime", initialValue: () => new Date().toISOString() },
   ],
   preview: {

@@ -5,11 +5,11 @@ import { getProduct, getRelatedProducts } from "@/sanity/queries";
 import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 import SanityImage from "@/components/SanityImage";
 import ProductCard from "@/components/ProductCard";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function ProductDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [notFound, setNotFound] = useState(false);
@@ -17,7 +17,7 @@ export default function ProductDetail() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await getProduct(id);
+        const data = await getProduct(slug);
         if (!data) {
           setNotFound(true);
           return;
@@ -28,7 +28,7 @@ export default function ProductDetail() {
         setNotFound(true);
       }
     })();
-  }, [id]);
+  }, [slug]);
 
   if (notFound) {
     return (
@@ -53,7 +53,7 @@ export default function ProductDetail() {
       </Link>
 
       <div className="mt-8 grid md:grid-cols-2 gap-12">
-        <div className="product-img-wrap rounded-sm" style={{ aspectRatio: "4 / 5" }}>
+        <div className="product-img-wrap rounded-sm max-w-sm mx-auto md:max-w-none md:mx-0" style={{ aspectRatio: "4 / 5" }}>
           {product.image && (
             <SanityImage src={urlForImage(product.image, 800)} lqip={product.image_lqip} alt={product.name} />
           )}
@@ -74,19 +74,30 @@ export default function ProductDetail() {
             {product.description || "A distinctive piece from the NJE atelier."}
           </div>
 
-          <a
-            href={`https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
-              `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.\n\n${window.location.href}`
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-full text-sm font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg"
-            style={{ background: "#25D366" }}
-            data-testid="btn-whatsapp-enquire"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Enquire on WhatsApp
-          </a>
+          <div className="flex flex-wrap gap-3 mt-8">
+            <a
+              href={`https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.\n\n${window.location.href}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+              style={{ background: "#25D366" }}
+              data-testid="btn-whatsapp-enquire"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp Us
+            </a>
+            <a
+              href={`tel:+${NJE_WHATSAPP_NUMBER}`}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+              style={{ background: "#2563eb" }}
+              data-testid="btn-call-us"
+            >
+              <Phone className="w-4 h-4" />
+              Call Us
+            </a>
+          </div>
 
           <div className="mt-12 grid grid-cols-2 gap-6 border-t pt-8" style={{ borderColor: "var(--nje-border)" }}>
             <div>

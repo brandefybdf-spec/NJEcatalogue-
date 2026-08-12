@@ -38,7 +38,7 @@ export default function App() {
               {/* Customer */}
               <Route element={<CustomerLayout />}>
                 <Route path="/" element={<Catalogue />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/product/:slug" element={<ProductDetail />} />
               </Route>
 
               {/* Admin — Sanity Studio */}

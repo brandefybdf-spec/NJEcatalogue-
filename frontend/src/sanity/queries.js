@@ -2,6 +2,7 @@ import { sanityClient } from "./client";
 
 const PRODUCT_PROJECTION = `{
   "id": _id,
+  "slug": slug.current,
   name,
   description,
   price,
@@ -69,8 +70,8 @@ export async function getProductsByItemNumbers(itemNumbers) {
     .filter(Boolean);
 }
 
-export async function getProduct(id) {
-  return sanityClient.fetch(`*[_type == "product" && _id == $id][0] ${PRODUCT_PROJECTION}`, { id });
+export async function getProduct(slug) {
+  return sanityClient.fetch(`*[_type == "product" && slug.current == $slug][0] ${PRODUCT_PROJECTION}`, { slug });
 }
 
 /** Other products in the same category, for "you might also like". */

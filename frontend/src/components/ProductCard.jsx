@@ -6,7 +6,7 @@ import SanityImage from "@/components/SanityImage";
 export default function ProductCard({ product, index = 0 }) {
   return (
     <Link
-      to={`/product/${product.id}`}
+      to={`/product/${product.slug}`}
       className="group block"
       data-testid={`product-card-${product.id}`}
     >
