@@ -53,7 +53,7 @@ export default function ProductDetail() {
       </Link>
 
       <div className="mt-8 grid md:grid-cols-2 gap-12">
-        <div className="product-img-wrap rounded-sm max-w-sm mx-auto md:max-w-none md:mx-0" style={{ aspectRatio: "4 / 5" }}>
+        <div className="product-img-wrap rounded-sm w-full max-w-sm mx-auto md:max-w-none md:mx-0" style={{ aspectRatio: "4 / 5" }}>
           {product.image && (
             <SanityImage src={urlForImage(product.image, 800)} lqip={product.image_lqip} alt={product.name} />
           )}

@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import CustomerLayout from "@/components/CustomerLayout";
+import ScrollToTop from "@/components/ScrollToTop";
 
 import Catalogue from "@/pages/Catalogue";
 import ProductDetail from "@/pages/ProductDetail";
@@ -33,6 +34,7 @@ export default function App() {
     <div className="App">
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Suspense fallback={<AdminFallback />}>
             <Routes>
               {/* Customer */}

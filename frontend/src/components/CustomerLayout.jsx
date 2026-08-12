@@ -30,11 +30,6 @@ export default function CustomerLayout() {
                   data-testid="nav-catalogue">
               Catalogue
             </Link>
-            <Link to="/admin" className="text-sm font-medium hover:opacity-70 transition-opacity"
-                  style={{ color: "var(--nje-muted)" }}
-                  data-testid="nav-admin-link">
-              Admin
-            </Link>
           </nav>
         </div>
       </header>
