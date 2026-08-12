@@ -13,7 +13,7 @@ const PRODUCT_PROJECTION = `{
 }`;
 
 export async function getCategories() {
-  return sanityClient.fetch(
+  const categories = await sanityClient.fetch(
     `*[_type == "category"] | order(order asc) {
       "id": _id,
       name,
@@ -22,6 +22,8 @@ export async function getCategories() {
       "product_count": count(*[_type == "product" && references(^._id)])
     }`
   );
+  // Hide categories with nothing in them — no point showing an empty filter.
+  return categories.filter((c) => c.product_count > 0);
 }
 
 const SORT_TO_GROQ = {
@@ -47,7 +49,7 @@ export async function getProducts({ categoryIds, minPrice, maxPrice, search, sor
     params.maxPrice = maxPrice;
   }
   if (search) {
-    filters.push("name match $search");
+    filters.push("(name match $search || description match $search)");
     params.search = `*${search}*`;
   }
 
@@ -69,6 +71,14 @@ export async function getProductsByItemNumbers(itemNumbers) {
 
 export async function getProduct(id) {
   return sanityClient.fetch(`*[_type == "product" && _id == $id][0] ${PRODUCT_PROJECTION}`, { id });
+}
+
+/** Other products in the same category, for "you might also like". */
+export async function getRelatedProducts(categoryId, excludeId, limit = 4) {
+  return sanityClient.fetch(
+    `*[_type == "product" && category._ref == $categoryId && _id != $excludeId] | order(_createdAt desc) [0...$limit] ${PRODUCT_PROJECTION}`,
+    { categoryId, excludeId, limit }
+  );
 }
 
 export async function getMeta() {

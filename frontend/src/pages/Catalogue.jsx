@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { urlForImage } from "@/sanity/client";
 import { getCategories, getProducts, getProductsByItemNumbers } from "@/sanity/queries";
 import ProductCard from "@/components/ProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import SanityImage from "@/components/SanityImage";
 import FilterSidebar from "@/components/FilterSidebar";
 import { Input } from "@/components/ui/input";
@@ -163,7 +164,13 @@ export default function Catalogue() {
                 {loading ? "Loading…" : `${products.length} product${products.length !== 1 ? "s" : ""}`}
               </div>
             </div>
-            {products.length === 0 && !loading ? (
+            {loading && products.length === 0 ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 sm:gap-x-6 gap-y-8 sm:gap-y-12">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : products.length === 0 ? (
               <div className="py-24 text-center text-sm" style={{ color: "var(--nje-muted)" }} data-testid="empty-state">
                 No products match your filters.
               </div>

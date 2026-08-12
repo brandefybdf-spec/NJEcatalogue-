@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { urlForImage } from "@/sanity/client";
-import { getProduct } from "@/sanity/queries";
+import { getProduct, getRelatedProducts } from "@/sanity/queries";
+import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 import SanityImage from "@/components/SanityImage";
+import ProductCard from "@/components/ProductCard";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-// NJE business WhatsApp number (E.164 without +)
-const NJE_WHATSAPP = "919811922941";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export default function ProductDetail() {
           return;
         }
         setProduct(data);
+        setRelated(await getRelatedProducts(data.category_id, data.id));
       } catch (e) {
         setNotFound(true);
       }
@@ -74,7 +75,7 @@ export default function ProductDetail() {
           </div>
 
           <a
-            href={`https://wa.me/${NJE_WHATSAPP}?text=${encodeURIComponent(
+            href={`https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
               `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.\n\n${window.location.href}`
             )}`}
             target="_blank"
@@ -99,6 +100,19 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {related.length > 0 && (
+        <div className="mt-20 border-t pt-12" style={{ borderColor: "var(--nje-border)" }}>
+          <h2 className="font-editorial text-2xl mb-6" style={{ color: "var(--nje-text)" }}>
+            You might also like
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-8">
+            {related.map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
     </article>
   );
 }

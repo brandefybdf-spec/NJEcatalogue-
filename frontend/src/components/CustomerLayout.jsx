@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { NJE_WHATSAPP_NUMBER, formatPhoneDisplay } from "@/lib/contact";
 
 export default function CustomerLayout() {
   const location = useLocation();
@@ -56,8 +57,18 @@ export default function CustomerLayout() {
               </div>
             </div>
           </div>
-          <div className="text-xs" style={{ color: "var(--nje-muted)" }}>
-            © {new Date().getFullYear()} NJE. All rights reserved.
+          <div className="flex flex-col items-start md:items-end gap-1">
+            <a
+              href={`tel:+${NJE_WHATSAPP_NUMBER}`}
+              className="text-sm font-medium hover:opacity-70 transition-opacity"
+              style={{ color: "var(--nje-text)" }}
+              data-testid="footer-phone"
+            >
+              {formatPhoneDisplay(NJE_WHATSAPP_NUMBER)}
+            </a>
+            <div className="text-xs" style={{ color: "var(--nje-muted)" }}>
+              © {new Date().getFullYear()} NJE. All rights reserved.
+            </div>
           </div>
         </div>
       </footer>
