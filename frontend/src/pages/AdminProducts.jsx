@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { apiErrorMessage, formatINR, resolveImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     const params = {};
     if (search) params.search = search;
@@ -52,12 +52,12 @@ export default function AdminProducts() {
     setProducts(p.data);
     setCategories(c.data);
     setLoading(false);
-  };
+  }, [search, filterCategory]);
 
   useEffect(() => {
     const t = setTimeout(load, 200);
     return () => clearTimeout(t);
-  }, [search, filterCategory]);
+  }, [load]);
 
   const allChecked = products.length > 0 && products.every((p) => selected.has(p.id));
   const toggleAll = () => {
