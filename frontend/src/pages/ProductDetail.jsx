@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import api, { resolveImageUrl, formatINR } from "@/lib/api";
+import { urlForImage } from "@/sanity/client";
+import { getProduct } from "@/sanity/queries";
+import SanityImage from "@/components/SanityImage";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -15,7 +17,11 @@ export default function ProductDetail() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await api.get(`/products/${id}`);
+        const data = await getProduct(id);
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
         setProduct(data);
       } catch (e) {
         setNotFound(true);
@@ -47,7 +53,9 @@ export default function ProductDetail() {
 
       <div className="mt-8 grid md:grid-cols-2 gap-12">
         <div className="product-img-wrap rounded-sm" style={{ aspectRatio: "4 / 5" }}>
-          {product.image_url && <img src={resolveImageUrl(product.image_url, "detail")} alt={product.name} />}
+          {product.image && (
+            <SanityImage src={urlForImage(product.image, 800)} lqip={product.image_lqip} alt={product.name} />
+          )}
         </div>
         <div className="pt-4">
           <div className="overline" data-testid="detail-category">{product.category_name}</div>
@@ -61,16 +69,13 @@ export default function ProductDetail() {
           <div className="mt-4 font-mono-item text-sm" style={{ color: "var(--nje-muted)" }} data-testid="detail-item-number">
             {product.item_number}
           </div>
-          <div className="mt-8 text-3xl font-medium" style={{ color: "var(--nje-primary)" }} data-testid="detail-price">
-            {formatINR(product.price)}
-          </div>
-          <div className="mt-10 max-w-lg text-base leading-relaxed" style={{ color: "var(--nje-muted)" }} data-testid="detail-description">
+          <div className="mt-8 max-w-lg text-base leading-relaxed" style={{ color: "var(--nje-muted)" }} data-testid="detail-description">
             {product.description || "A distinctive piece from the NJE atelier."}
           </div>
 
           <a
             href={`https://wa.me/${NJE_WHATSAPP}?text=${encodeURIComponent(
-              `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name} (${formatINR(product.price)}).\n\n${window.location.href}`
+              `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.\n\n${window.location.href}`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

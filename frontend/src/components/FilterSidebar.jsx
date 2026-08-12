@@ -1,25 +1,16 @@
 import React, { useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { formatINR } from "@/lib/api";
 import { X } from "lucide-react";
 
 export default function FilterSidebar({
   categories,
   selectedCategories,
   onToggleCategory,
-  minPrice,
-  maxPrice,
-  priceRange,
-  onPriceChange,
   onReset,
 }) {
-  const totalActive = useMemo(
-    () => selectedCategories.length + (priceRange[0] !== minPrice || priceRange[1] !== maxPrice ? 1 : 0),
-    [selectedCategories, priceRange, minPrice, maxPrice]
-  );
+  const totalActive = useMemo(() => selectedCategories.length, [selectedCategories]);
 
   return (
     <aside className="w-full md:w-64 shrink-0" data-testid="filter-sidebar">
@@ -66,28 +57,6 @@ export default function FilterSidebar({
               </span>
             </label>
           ))}
-        </div>
-      </div>
-
-      <Separator className="my-6" />
-
-      <div>
-        <div className="text-sm font-semibold mb-4" style={{ color: "var(--nje-text)" }}>
-          Price Range
-        </div>
-        <div data-testid="price-range-slider" className="px-1">
-          <Slider
-            value={priceRange}
-            min={minPrice}
-            max={maxPrice}
-            step={50}
-            onValueChange={onPriceChange}
-            minStepsBetweenThumbs={1}
-          />
-        </div>
-        <div className="mt-4 flex items-center justify-between text-xs" style={{ color: "var(--nje-muted)" }}>
-          <span data-testid="price-min-label">{formatINR(priceRange[0])}</span>
-          <span data-testid="price-max-label">{formatINR(priceRange[1])}</span>
         </div>
       </div>
     </aside>

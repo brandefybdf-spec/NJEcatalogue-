@@ -22,6 +22,10 @@ const AdminBulkUpload = lazy(() => import("@/pages/AdminBulkUpload"));
 const AdminCategories = lazy(() => import("@/pages/AdminCategories"));
 const AdminAnalytics = lazy(() => import("@/pages/AdminAnalytics"));
 
+// Sanity Studio (new CMS-based admin, being built alongside the existing
+// admin panel — not yet wired up to replace it).
+const SanityStudioPage = lazy(() => import("@/pages/SanityStudioPage"));
+
 function AdminFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center admin-bg">
@@ -61,6 +65,9 @@ export default function App() {
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
               </Route>
+
+              {/* New Sanity Studio admin — not yet linked from the UI, reachable directly */}
+              <Route path="/admin/studio/*" element={<SanityStudioPage />} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

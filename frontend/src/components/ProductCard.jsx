@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { resolveImageUrl, formatINR } from "@/lib/api";
+import { urlForImage } from "@/sanity/client";
+import SanityImage from "@/components/SanityImage";
 
 export default function ProductCard({ product, index = 0 }) {
   return (
@@ -10,9 +11,10 @@ export default function ProductCard({ product, index = 0 }) {
       data-testid={`product-card-${product.id}`}
     >
       <div className="product-img-wrap rounded-sm" style={{ aspectRatio: "4 / 5" }}>
-        {product.image_url ? (
-          <img
-            src={resolveImageUrl(product.image_url, "thumbnail")}
+        {product.image ? (
+          <SanityImage
+            src={urlForImage(product.image, 400)}
+            lqip={product.image_lqip}
             alt={product.name}
             loading="lazy"
           />
@@ -24,21 +26,13 @@ export default function ProductCard({ product, index = 0 }) {
       </div>
       <div className="mt-4">
         <div className="overline">{product.category_name}</div>
-        <div className="mt-1 flex items-start justify-between gap-3">
-          <h3
-            className="font-editorial text-lg leading-snug"
-            style={{ color: "var(--nje-text)" }}
-            data-testid={`product-name-${product.id}`}
-          >
-            {product.name}
-          </h3>
-          <div className="text-sm font-medium whitespace-nowrap" style={{ color: "var(--nje-text)" }}>
-            {formatINR(product.price)}
-          </div>
-        </div>
-        <div className="mt-1 font-mono-item text-xs" style={{ color: "var(--nje-muted)" }}>
-          {product.item_number}
-        </div>
+        <h3
+          className="mt-1 font-editorial text-lg leading-snug"
+          style={{ color: "var(--nje-text)" }}
+          data-testid={`product-name-${product.id}`}
+        >
+          {product.name}
+        </h3>
       </div>
     </Link>
   );

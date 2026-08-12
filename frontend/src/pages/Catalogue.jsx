@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import api, { resolveImageUrl } from "@/lib/api";
+import { urlForImage } from "@/sanity/client";
+import { getCategories, getProducts } from "@/sanity/queries";
 import ProductCard from "@/components/ProductCard";
+import SanityImage from "@/components/SanityImage";
 import FilterSidebar from "@/components/FilterSidebar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,23 +11,18 @@ import { Button } from "@/components/ui/button";
 import { SlidersHorizontal, Search } from "lucide-react";
 
 export default function Catalogue() {
-  const [meta, setMeta] = useState({ min_price: 50, max_price: 5000 });
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState([50, 5000]);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
 
-  // Load meta + categories once
+  // Load categories once
   useEffect(() => {
     (async () => {
       try {
-        const [m, c] = await Promise.all([api.get("/meta"), api.get("/categories")]);
-        setMeta(m.data);
-        setPriceRange([m.data.min_price, m.data.max_price]);
-        setCategories(c.data);
+        setCategories(await getCategories());
       } catch (e) { /* noop */ }
     })();
   }, []);
@@ -35,25 +32,23 @@ export default function Catalogue() {
     const t = setTimeout(async () => {
       setLoading(true);
       try {
-        const params = { sort };
-        if (selectedCategories.length) params.categories = selectedCategories.join(",");
-        params.min_price = priceRange[0];
-        params.max_price = priceRange[1];
-        if (search) params.search = search;
-        const { data } = await api.get("/products", { params });
+        const data = await getProducts({
+          categoryIds: selectedCategories,
+          search,
+          sort,
+        });
         setProducts(data);
       } catch (e) { /* noop */ }
       setLoading(false);
     }, 250);
     return () => clearTimeout(t);
-  }, [selectedCategories, priceRange, search, sort]);
+  }, [selectedCategories, search, sort]);
 
   const toggleCategory = (id) =>
     setSelectedCategories((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
   const reset = () => {
     setSelectedCategories([]);
-    setPriceRange([meta.min_price, meta.max_price]);
     setSearch("");
   };
 
@@ -62,10 +57,6 @@ export default function Catalogue() {
       categories={categories}
       selectedCategories={selectedCategories}
       onToggleCategory={toggleCategory}
-      minPrice={meta.min_price}
-      maxPrice={meta.max_price}
-      priceRange={priceRange}
-      onPriceChange={setPriceRange}
       onReset={reset}
     />
   );
@@ -86,7 +77,7 @@ export default function Catalogue() {
               &amp; junk jewellery.
             </h1>
             <p className="mt-6 max-w-md text-base" style={{ color: "var(--nje-muted)" }}>
-              Every piece from NJE is hand-picked, thoughtfully finished, and priced in ₹.
+              Every piece from NJE is hand-picked and thoughtfully finished.
               Explore the full catalogue below.
             </p>
           </div>
@@ -94,7 +85,7 @@ export default function Catalogue() {
             <div className="grid grid-cols-2 gap-4">
               {products.slice(0, 4).map((p) => (
                 <div key={p.id} className="product-img-wrap rounded-sm" style={{ aspectRatio: "3 / 4" }}>
-                  {p.image_url && <img src={resolveImageUrl(p.image_url, "hero")} alt="" />}
+                  {p.image && <SanityImage src={urlForImage(p.image, 400)} lqip={p.image_lqip} alt="" />}
                 </div>
               ))}
             </div>
@@ -133,8 +124,8 @@ export default function Catalogue() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="newest" data-testid="sort-newest">Newest</SelectItem>
-                <SelectItem value="price_asc" data-testid="sort-price-asc">Price: Low → High</SelectItem>
-                <SelectItem value="price_desc" data-testid="sort-price-desc">Price: High → Low</SelectItem>
+                <SelectItem value="name_asc" data-testid="sort-name-asc">Name: A → Z</SelectItem>
+                <SelectItem value="name_desc" data-testid="sort-name-desc">Name: Z → A</SelectItem>
               </SelectContent>
             </Select>
           </div>
