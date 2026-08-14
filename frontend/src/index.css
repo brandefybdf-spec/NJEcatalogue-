@@ -117,6 +117,20 @@
     box-shadow: 0 10px 24px -12px rgba(140, 90, 79, 0.55);
 }
 
+/* Hero CTAs — square, always filled (no separate hover/inactive look) */
+.hero-cta {
+    border-radius: 0;
+    background: var(--nje-primary);
+    color: #fff;
+    border-color: var(--nje-primary);
+    font-family: 'Manrope', system-ui, sans-serif;
+}
+.hero-cta-green {
+    background: #25D366;
+    color: #fff;
+    border-color: #25D366;
+}
+
 /* Focus ring */
 *:focus-visible {
     outline: 2px solid var(--nje-primary);

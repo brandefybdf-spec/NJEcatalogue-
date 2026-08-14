@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // Shows Sanity's tiny built-in blurred placeholder (lqip) instantly, then
 // fades in the real image once it's actually loaded — instead of a blank
@@ -6,6 +6,14 @@ import React, { useState } from "react";
 // that image size.
 export default function SanityImage({ src, lqip, alt, loading }) {
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef(null);
+
+  // If the browser already has this image cached, it's `complete` the
+  // instant it mounts — the load event fires before onLoad is attached,
+  // so it never reaches us and the image stays stuck at opacity 0.
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, [src]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -25,6 +33,7 @@ export default function SanityImage({ src, lqip, alt, loading }) {
         />
       )}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         loading={loading}

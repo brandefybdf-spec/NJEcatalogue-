@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal, Search } from "lucide-react";
+import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 
 // Hand-picked products for the homepage hero collage.
 const HERO_ITEM_NUMBERS = ["NJE-Enamel-Gilat-001", "NJE-Necklaces-006", "NJE-Silver-013", "NJE-Silver-009"];
@@ -90,7 +91,7 @@ export default function Catalogue() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden" style={{ background: "var(--nje-surface)" }}>
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 md:pt-10 md:pb-24 grid md:grid-cols-2 gap-12 items-center md:items-start">
           <div>
             <div className="overline">Est. Handcrafted in India</div>
             <h1
@@ -105,8 +106,28 @@ export default function Catalogue() {
               Every piece from NJE is hand-picked and thoughtfully finished.
               Explore the full catalogue below.
             </p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <a
+                href="#catalogue-grid"
+                className="hero-cta inline-flex items-center px-6 py-3 text-sm font-medium border transition-colors"
+                data-testid="btn-browse-products"
+              >
+                Browse Products
+              </a>
+              <a
+                href={`https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                  "Hi NJE, I'd like to enquire about your catalogue."
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hero-cta hero-cta-green inline-flex items-center px-6 py-3 text-sm font-medium border transition-colors"
+                data-testid="btn-whatsapp-us"
+              >
+                WhatsApp Us
+              </a>
+            </div>
           </div>
-          <div className="relative">
+          <div className="relative w-full md:max-w-sm md:ml-auto">
             <div className="grid grid-cols-2 gap-4">
               {heroProducts.map((p) => (
                 <div key={p.id} className="product-img-wrap rounded-sm" style={{ aspectRatio: "3 / 4" }}>
@@ -158,7 +179,7 @@ export default function Catalogue() {
       </section>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-10 pb-24">
+      <section id="catalogue-grid" className="max-w-7xl mx-auto px-6 sm:px-10 pb-24">
         <div className="grid md:grid-cols-[16rem_1fr] gap-10 mt-6">
           <div className="hidden md:block">
             {filters}
