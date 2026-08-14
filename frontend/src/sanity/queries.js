@@ -20,6 +20,7 @@ export async function getCategories() {
       name,
       "slug": slug.current,
       order,
+      priceRanges,
       "product_count": count(*[_type == "product" && references(^._id)])
     }`
   );
@@ -33,7 +34,7 @@ const SORT_TO_GROQ = {
   name_desc: "order(name desc)",
 };
 
-export async function getProducts({ categoryIds, minPrice, maxPrice, search, sort } = {}) {
+export async function getProducts({ categoryIds, priceRangeId, search, sort } = {}) {
   const filters = ['_type == "product"'];
   const params = {};
 
@@ -41,13 +42,11 @@ export async function getProducts({ categoryIds, minPrice, maxPrice, search, sor
     filters.push("category._ref in $categoryIds");
     params.categoryIds = categoryIds;
   }
-  if (minPrice !== undefined && minPrice !== null) {
-    filters.push("price >= $minPrice");
-    params.minPrice = minPrice;
-  }
-  if (maxPrice !== undefined && maxPrice !== null) {
-    filters.push("price <= $maxPrice");
-    params.maxPrice = maxPrice;
+  if (priceRangeId) {
+    filters.push(
+      "((count(priceRanges) > 0 && $priceRangeId in priceRanges) || (count(priceRanges) == 0 && $priceRangeId in category->priceRanges))"
+    );
+    params.priceRangeId = priceRangeId;
   }
   if (search) {
     filters.push("(name match $search || description match $search)");

@@ -29,6 +29,7 @@ export default function Catalogue() {
   const [products, setProducts] = useState([]);
   const [heroProducts, setHeroProducts] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,7 @@ export default function Catalogue() {
       try {
         const data = await getProducts({
           categoryIds: selectedCategories,
+          priceRangeId: selectedPriceRange,
           search,
           sort,
         });
@@ -62,13 +64,14 @@ export default function Catalogue() {
       setLoading(false);
     }, 250);
     return () => clearTimeout(t);
-  }, [selectedCategories, search, sort]);
+  }, [selectedCategories, selectedPriceRange, search, sort]);
 
   const toggleCategory = (id) =>
     setSelectedCategories((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
   const reset = () => {
     setSelectedCategories([]);
+    setSelectedPriceRange(null);
     setSearch("");
   };
 
@@ -77,6 +80,8 @@ export default function Catalogue() {
       categories={categories}
       selectedCategories={selectedCategories}
       onToggleCategory={toggleCategory}
+      selectedPriceRange={selectedPriceRange}
+      onSelectPriceRange={setSelectedPriceRange}
       onReset={reset}
     />
   );
