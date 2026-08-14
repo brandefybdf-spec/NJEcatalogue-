@@ -135,16 +135,16 @@ export default function Catalogue() {
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" className="md:hidden" data-testid="btn-open-filters">
-                  <SlidersHorizontal className="w-4 h-4 mr-2" /> Filters
+                  <SlidersHorizontal className="w-4 h-4 mr-2" /> Categories & Prices
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-80">
-                <SheetTitle className="mb-4">Filters</SheetTitle>
+                <SheetTitle className="mb-4">Categories & Prices</SheetTitle>
                 {filters}
               </SheetContent>
             </Sheet>
             <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="w-[180px] bg-white" data-testid="sort-select">
+              <SelectTrigger className="w-[120px] md:w-[180px] bg-white" data-testid="sort-select">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
               <SelectContent>
