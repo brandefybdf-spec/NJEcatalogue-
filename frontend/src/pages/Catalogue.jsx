@@ -13,7 +13,7 @@ import { SlidersHorizontal, Search } from "lucide-react";
 import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 
 // Hand-picked products for the homepage hero collage.
-const HERO_ITEM_NUMBERS = ["NJE-Enamel-Gilat-001", "NJE-Necklaces-006", "NJE-Silver-013", "NJE-Silver-009"];
+const HERO_ITEM_NUMBERS = ["NJE-Enamel-Gilat-001", "NJE-Enamel-Gilat-002", "NJE-Silver-013", "NJE-Silver-009"];
 
 // Gilat Handcrafts products are shown, but always pushed to the end of the
 // grid regardless of the chosen sort — a display preference, not a filter.
