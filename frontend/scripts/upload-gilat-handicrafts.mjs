@@ -28,39 +28,50 @@ const client = createClient({
   useCdn: false,
 });
 
-const CATEGORY_ID = "category-e1972a6a-5954-4e18-a005-069ebd11f76a"; // Gilat Handcrafts
-const IMAGE_DIR = path.join(
-  __dirname,
-  "..",
-  "public",
-  "gilat handicraft new product images"
-);
+const CATEGORY_ID = "category-147fe434-734d-4023-9496-12cc3398bec5"; // Silver Plated
+
+// Folder to read images from + the ordered list of slugs (filename minus
+// .webp) to upload. Change these two for each new batch of images.
+const IMAGE_DIR = path.join(__dirname, "..", "public", "silver plated part 2");
+
+// This category's existing item numbers are bare "SP<n>" (no NJE prefix),
+// unlike Gilat Handcrafts' "NJE-Gilat-###". Set to match whatever the
+// category already uses.
+const ITEM_PREFIX = "SP";
+const ITEM_PAD = 0; // 0 = no zero-padding (SP17, not SP017)
 
 const FILES_IN_ORDER = [
-  "ram-temple",
-  "kamdhenu-cow",
-  "elephant-frame",
-  "rose-frame",
-  "ganesha-bust",
-  "krishna-swing",
-  "radha-krishna",
-  "elephant-bowls",
-  "gift-set",
-  "peacock-diya",
-  "turtle-crystal",
-  "diya-pair",
-  "gau-mata",
-  "shyam-flags",
-  "elephant-dish",
-  "peacock-candle",
-  "horse-carriage",
-  "ram-darbar",
-  "leaf-platter",
-  "lakshmi-idol",
-  "elephant-pair",
-  "peacock-bowl",
-  "elephant-howdah",
-  "shiva-idol",
+  "pink-jar-set",
+  "sage-jar-set",
+  "rose-jar-set",
+  "classic-jar-set",
+  "olive-lattice-set",
+  "petal-vine-tray",
+  "rose-clutch-box",
+  "blossom-tier-dish",
+  "crystal-flower-stand",
+  "rose-tealight-single",
+  "rose-tealight-duo",
+  "rose-tealight-trio",
+  "floral-gem-clutch",
+  "floral-tray-bowl",
+  "gem-floral-frame",
+  "floral-candle-pair",
+  "floral-cake-stand",
+  "floral-pedestal-bowl",
+  "floral-trio-dish",
+  "pierced-round-bowl",
+  "pierced-rect-dish",
+  "ornate-rect-dish",
+  "lotus-hammered-bowl",
+  "petal-edge-bowl",
+  "rose-finial-bowl",
+  "garland-oval-bowl",
+  "engraved-round-tray",
+  "cherub-center-bowl",
+  "engraved-rect-tray",
+  "cherub-shell-bowl",
+  "gold-flower-mirror-tray",
 ];
 
 function titleCase(slug) {
@@ -82,7 +93,7 @@ async function nextItemNumber() {
 
 async function main() {
   let counter = await nextItemNumber();
-  console.log(`Starting from NJE-Gilat-${String(counter + 1).padStart(3, "0")}\n`);
+  console.log(`Starting from ${ITEM_PREFIX}${String(counter + 1).padStart(ITEM_PAD, "0")}\n`);
 
   let ok = 0;
   const failed = [];
@@ -94,7 +105,7 @@ async function main() {
       const asset = await client.assets.upload("image", buffer, { filename: `${slug}.webp` });
 
       counter += 1;
-      const itemNumber = `NJE-Gilat-${String(counter).padStart(3, "0")}`;
+      const itemNumber = `${ITEM_PREFIX}${String(counter).padStart(ITEM_PAD, "0")}`;
       const itemSlug = itemNumber.toLowerCase();
 
       await client.create({
