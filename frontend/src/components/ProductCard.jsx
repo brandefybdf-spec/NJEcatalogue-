@@ -33,6 +33,11 @@ export default function ProductCard({ product, index = 0 }) {
         >
           {product.name}
         </h3>
+        {(product.item_number || product.size) && (
+          <div className="mt-1 text-xs font-mono-item" style={{ color: "var(--nje-muted)" }}>
+            {[product.item_number, product.size].filter(Boolean).join(" · ")}
+          </div>
+        )}
       </div>
     </Link>
   );

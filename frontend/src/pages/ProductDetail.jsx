@@ -99,15 +99,21 @@ export default function ProductDetail() {
             </a>
           </div>
 
-          <div className="mt-12 grid grid-cols-2 gap-6 border-t pt-8" style={{ borderColor: "var(--nje-border)" }}>
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-6 border-t pt-8" style={{ borderColor: "var(--nje-border)" }}>
             <div>
               <div className="overline mb-1">Category</div>
               <div className="text-sm">{product.category_name}</div>
             </div>
             <div>
-              <div className="overline mb-1">Item Number</div>
+              <div className="overline mb-1">SKU</div>
               <div className="text-sm font-mono-item">{product.item_number}</div>
             </div>
+            {product.size && (
+              <div>
+                <div className="overline mb-1">Size</div>
+                <div className="text-sm">{product.size}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -42,12 +42,18 @@ export default {
     },
     {
       name: "itemNumber",
-      title: "Item number",
+      title: "SKU",
       type: "string",
       description:
         "Pick a category first, then click Auto-generate — it looks at existing item numbers in that category and picks the next one.",
       validation: (Rule) => Rule.required(),
       components: { input: ItemNumberInput },
+    },
+    {
+      name: "size",
+      title: "Size",
+      type: "string",
+      description: 'Dimensions as shown on the product, e.g. 4"x5" or 8.5"-10".',
     },
     {
       name: "slug",

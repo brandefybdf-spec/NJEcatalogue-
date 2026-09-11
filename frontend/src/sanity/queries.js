@@ -7,6 +7,7 @@ const PRODUCT_PROJECTION = `{
   description,
   price,
   "item_number": itemNumber,
+  size,
   image,
   "image_lqip": image.asset->metadata.lqip,
   "category_id": category->_id,
@@ -49,7 +50,7 @@ export async function getProducts({ categoryIds, priceRangeId, search, sort } = 
     params.priceRangeId = priceRangeId;
   }
   if (search) {
-    filters.push("(name match $search || description match $search)");
+    filters.push("(name match $search || description match $search || itemNumber match $search)");
     params.search = `*${search}*`;
   }
 
