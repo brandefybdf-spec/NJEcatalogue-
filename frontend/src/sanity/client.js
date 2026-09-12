@@ -25,3 +25,12 @@ export function urlForImage(source, width) {
   if (width) img = img.width(Math.round(width * dpr));
   return img.url();
 }
+
+/**
+ * Small, heavily-compressed JPEG for sharing as a link preview (e.g. WhatsApp
+ * enquiry messages) — fixed size, no devicePixelRatio scaling, low quality.
+ */
+export function urlForShareImage(source, width = 500) {
+  if (!source) return "";
+  return builder.image(source).format("jpg").quality(50).fit("max").width(width).url();
+}

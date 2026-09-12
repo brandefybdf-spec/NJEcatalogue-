@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { urlForImage } from "@/sanity/client";
+import { urlForImage, urlForShareImage } from "@/sanity/client";
 import { getProduct, getRelatedProducts } from "@/sanity/queries";
 import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 import SanityImage from "@/components/SanityImage";
@@ -32,7 +32,7 @@ export default function ProductDetail() {
     e.preventDefault();
     if (!enquiryValid || !product) return;
 
-    const imageUrl = product.image ? urlForImage(product.image, 1200) : null;
+    const imageUrl = product.image ? urlForShareImage(product.image) : null;
     const message = [
       `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.`,
       "",
@@ -41,9 +41,7 @@ export default function ProductDetail() {
       `Pcs required: ${enquiry.pcs.trim()}`,
       "",
       `Product link: ${window.location.href}`,
-      ...(imageUrl ? [`Image: ${imageUrl}`] : []),
-      "",
-      "Note: Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.",
+      ...(imageUrl ? [imageUrl] : []),
     ].join("\n");
 
     window.open(
