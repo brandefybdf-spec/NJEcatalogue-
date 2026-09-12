@@ -66,9 +66,12 @@ module.exports = async (req, res) => {
   const description = descriptionParts.join(" · ");
 
   // Sanity's asset CDN can resize/reformat on the fly; force a JPG since not
-  // every link-preview crawler negotiates webp correctly.
+  // every link-preview crawler negotiates webp correctly. fit=fill (not
+  // crop) pads to the target canvas instead of cutting off part of the
+  // product — the white bg matches these photos' existing white backdrop,
+  // so the padding is invisible.
   const ogImage = product.imageUrl
-    ? `${product.imageUrl}?w=1200&h=900&fit=crop&fm=jpg&q=80`
+    ? `${product.imageUrl}?w=1200&h=900&fit=fill&bg=ffffff&fm=jpg&q=80`
     : `https://${host}/nje-logo.webp`;
 
   const html = `<!doctype html>
