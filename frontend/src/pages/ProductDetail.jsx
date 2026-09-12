@@ -5,14 +5,55 @@ import { getProduct, getRelatedProducts } from "@/sanity/queries";
 import { NJE_WHATSAPP_NUMBER } from "@/lib/contact";
 import SanityImage from "@/components/SanityImage";
 import ProductCard from "@/components/ProductCard";
-import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ProductDetail() {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
   const [notFound, setNotFound] = useState(false);
+  const [enquiryOpen, setEnquiryOpen] = useState(false);
+  const [enquiry, setEnquiry] = useState({ name: "", location: "", pcs: "" });
+
+  const enquiryValid =
+    enquiry.name.trim() && enquiry.location.trim() && enquiry.pcs.trim();
+
+  const handleEnquirySubmit = (e) => {
+    e.preventDefault();
+    if (!enquiryValid || !product) return;
+
+    const imageUrl = product.image ? urlForImage(product.image, 1200) : null;
+    const message = [
+      `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.`,
+      "",
+      `Name: ${enquiry.name.trim()}`,
+      `State/Country: ${enquiry.location.trim()}`,
+      `Pcs required: ${enquiry.pcs.trim()}`,
+      "",
+      `Product link: ${window.location.href}`,
+      ...(imageUrl ? [`Image: ${imageUrl}`] : []),
+      "",
+      "Note: Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.",
+    ].join("\n");
+
+    window.open(
+      `https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    setEnquiryOpen(false);
+    setEnquiry({ name: "", location: "", pcs: "" });
+  };
 
   useEffect(() => {
     (async () => {
@@ -75,29 +116,79 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex flex-wrap gap-3 mt-8">
-            <a
-              href={`https://wa.me/${NJE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                `Hi NJE, I'd like to enquire about ${product.item_number} — ${product.name}.\n\n${window.location.href}`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => setEnquiryOpen(true)}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg"
               style={{ background: "#25D366" }}
               data-testid="btn-whatsapp-enquire"
             >
               <MessageCircle className="w-4 h-4" />
               WhatsApp Us
-            </a>
-            <a
-              href={`tel:+${NJE_WHATSAPP_NUMBER}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg"
-              style={{ background: "#2563eb" }}
-              data-testid="btn-call-us"
-            >
-              <Phone className="w-4 h-4" />
-              Call Us
-            </a>
+            </button>
           </div>
+          <p className="mt-3 text-xs max-w-md" style={{ color: "var(--nje-muted)" }}>
+            Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.
+          </p>
+
+          <Dialog open={enquiryOpen} onOpenChange={setEnquiryOpen}>
+            <DialogContent data-testid="whatsapp-enquiry-dialog">
+              <DialogHeader>
+                <DialogTitle>Enquire about {product.name}</DialogTitle>
+                <DialogDescription>
+                  Please share a few details before we connect on WhatsApp.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleEnquirySubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="enquiry-name">Name</Label>
+                  <Input
+                    id="enquiry-name"
+                    data-testid="enquiry-name"
+                    value={enquiry.name}
+                    onChange={(e) => setEnquiry((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="enquiry-location">State/Country</Label>
+                  <Input
+                    id="enquiry-location"
+                    data-testid="enquiry-location"
+                    value={enquiry.location}
+                    onChange={(e) => setEnquiry((f) => ({ ...f, location: e.target.value }))}
+                    placeholder="e.g. Maharashtra, India"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="enquiry-pcs">Pcs required</Label>
+                  <Input
+                    id="enquiry-pcs"
+                    data-testid="enquiry-pcs"
+                    value={enquiry.pcs}
+                    onChange={(e) => setEnquiry((f) => ({ ...f, pcs: e.target.value }))}
+                    placeholder="e.g. 50"
+                    required
+                  />
+                </div>
+                <p className="text-xs" style={{ color: "var(--nje-muted)" }}>
+                  Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.
+                </p>
+                <Button
+                  type="submit"
+                  disabled={!enquiryValid}
+                  className="w-full text-white"
+                  style={{ background: "#25D366" }}
+                  data-testid="btn-whatsapp-submit"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Continue on WhatsApp
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
 
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-6 border-t pt-8" style={{ borderColor: "var(--nje-border)" }}>
             <div>
