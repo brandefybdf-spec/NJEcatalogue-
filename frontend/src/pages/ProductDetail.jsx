@@ -125,8 +125,8 @@ export default function ProductDetail() {
               WhatsApp Us
             </button>
           </div>
-          <p className="mt-3 text-xs max-w-md" style={{ color: "var(--nje-muted)" }}>
-            Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.
+          <p className="mt-3 text-sm max-w-md" style={{ color: "var(--nje-muted)" }}>
+            Not for retail sale, wholesale and sample pcs orders only. Minimum order value ₹10,000.
           </p>
 
           <Dialog open={enquiryOpen} onOpenChange={setEnquiryOpen}>
@@ -171,8 +171,8 @@ export default function ProductDetail() {
                     required
                   />
                 </div>
-                <p className="text-xs" style={{ color: "var(--nje-muted)" }}>
-                  Not for retail sale — wholesale and sample pcs orders only. Minimum order value ₹10,000.
+                <p className="text-sm" style={{ color: "var(--nje-muted)" }}>
+                  Not for retail sale, wholesale and sample pcs orders only. Minimum order value ₹10,000.
                 </p>
                 <Button
                   type="submit"

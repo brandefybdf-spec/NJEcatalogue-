@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/product/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|WhatsApp|Twitterbot|Slackbot|LinkedInBot|TelegramBot|Discordbot|Pinterest|SkypeUriPreview|W3C_Validator|redditbot|Applebot|vkShare|Googlebot|Bingbot).*"
+        }
+      ],
+      "destination": "/api/og/product?slug=:slug"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
