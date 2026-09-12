@@ -68,7 +68,7 @@ module.exports = async (req, res) => {
   // Sanity's asset CDN can resize/reformat on the fly; force a JPG since not
   // every link-preview crawler negotiates webp correctly.
   const ogImage = product.imageUrl
-    ? `${product.imageUrl}?w=1200&h=630&fit=crop&fm=jpg&q=80`
+    ? `${product.imageUrl}?w=1200&h=900&fit=crop&fm=jpg&q=80`
     : `https://${host}/nje-logo.webp`;
 
   const html = `<!doctype html>
@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
 <meta property="og:description" content="${escapeHtml(description)}" />
 <meta property="og:image" content="${escapeHtml(ogImage)}" />
 <meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+<meta property="og:image:height" content="900" />
 <meta property="og:url" content="${escapeHtml(pageUrl)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeHtml(title)}" />
